@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DOTFILES_REPO="https://github.com/<YOUR_USERNAME>/<YOUR_REPO>.git"
+DOTFILES_REPO="https://github.com/just-a-developer-man/dotfiles.git"
 DOTFILES_DIR="$HOME/dotfiles"
 
 GO_VERSION="1.24.2"
