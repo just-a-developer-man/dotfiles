@@ -181,12 +181,46 @@ setup_terminal_transp() {
   gsettings set "$PROFILE_PATH" background-transparency-percent 10
 }
 
+install_nerd_font() {
+  local url="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/JetBrainsMono.zip"
+  local tmpdir
+  tmpdir=$(mktemp -d)
+
+  echo "📥 Скачиваю шрифты..."
+  wget -q "$url" -O "$tmpdir/font.zip" || {
+    echo "Ошибка: не удалось скачать"
+    return 1
+  }
+
+  echo "📦 Распаковываю..."
+  sudo mkdir -p /usr/local/share/fonts/JetBrainsMono
+  sudo unzip -o "$tmpdir/font.zip" -d /usr/local/share/fonts/JetBrainsMono >/dev/null
+
+  echo "🔄 Обновляю кэш шрифтов..."
+  sudo fc-cache -fv >/dev/null
+
+  # --- Настройка шрифта в GNOME Terminal ---
+  echo "🎨 Настраиваю GNOME Terminal..."
+  local profile_id
+  profile_id=$(gsettings get org.gnome.Terminal.ProfilesList default | tr -d \')
+  if [ -n "$profile_id" ]; then
+    gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$profile_id/" use-system-font false
+    gsettings set "org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$profile_id/" font "JetBrainsMono Nerd Font 13"
+    echo "✅ Шрифт в GNOME Terminal установлен: JetBrainsMono Nerd Font 13"
+  else
+    echo "⚠️ Не удалось найти профиль GNOME Terminal"
+  fi
+
+  rm -rf "$tmpdir"
+  echo "✅ Шрифты JetBrainsMono Nerd Font установлены!"
+}
+
 # -------------------------------
 # Main
 # -------------------------------
 echo "🚀 Updating system..."
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y wget curl git nodejs npm build-essential ripgrep fd-find python3-dev python3-venv dconf-cli uuid-runtime
+sudo apt install -y wget curl git nodejs npm build-essential ripgrep fd-find python3-dev python3-venv dconf-cli uuid-runtime unzip fontconfig
 sudo snap install task --classic
 wget https://github.com/Eugeny/tabby/releases/download/v1.0.225/tabby-1.0.225-linux-x64.deb
 sudo apt install ./tabby-1.0.225-linux-x64.deb
@@ -206,6 +240,7 @@ install_neovim_plugins
 setup_gnome_term_theme
 install_vs_code
 setup_terminal_transp
+install_nerd_font
 
 echo "✅ Setup complete!"
 exec zsh -l
