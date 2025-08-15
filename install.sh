@@ -56,6 +56,14 @@ install_lazygit() {
 }
 
 install_dotfiles() {
+  # required
+  mv ~/.config/nvim{,.bak}
+
+  # optional but recommended
+  mv ~/.local/share/nvim{,.bak}
+  mv ~/.local/state/nvim{,.bak}
+  mv ~/.cache/nvim{,.bak}
+
   echo "📥 Cloning/updating dotfiles..."
   if [[ ! -d "$DOTFILES_DIR" ]]; then
     git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
