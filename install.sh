@@ -17,6 +17,10 @@ GO_TOOLS=(
 command_exists() { command -v "$1" >/dev/null 2>&1; }
 
 install_go_fixed() {
+  if command_exists go && [[ "$(go version | awk '{print $3}')" == "go$GO_VERSION" ]]; then
+    echo "✅ Go $GO_VERSION already installed"
+    return
+  fi
   echo "📦 Installing Go $GO_VERSION..."
   GO_TAR="go${GO_VERSION}.linux-amd64.tar.gz"
   if [ ! -f "$GO_TAR" ]; then
@@ -28,12 +32,20 @@ install_go_fixed() {
 }
 
 install_latest_rust() {
+  if command_exists rustc; then
+    echo "✅ Rust already installed"
+    return
+  fi
   echo "📦 Installing latest Rust..."
   curl -fsSL https://sh.rustup.rs | sh -s -- -y
   export PATH="$HOME/.cargo/bin:$PATH"
 }
 
 install_lazygit() {
+  if command_exists lazygit; then
+    echo "✅ LazyGit already installed"
+    return
+  fi
   echo "📦 Installing latest LazyGit..."
   LAZYGIT_VERSION=$(curl -fsSL "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" |
     grep -Po '"tag_name": *"v\K[^"]*')
@@ -85,8 +97,12 @@ install_go_tools() {
 }
 
 install_neovim_plugins() {
-  echo "📦 Installing Neovim plugins..."
-  nvim --headless +'Lazy sync' +qa
+  if command_exists nvim; then
+    echo "📦 Installing Neovim plugins..."
+    nvim --headless +'Lazy sync' +qa
+  else
+    echo "⚠️ Neovim not installed, skipping plugin sync"
+  fi
 }
 
 # -------------------------------
@@ -106,4 +122,3 @@ install_neovim_plugins
 
 echo "✅ Setup complete!"
 exec zsh -l
-xec zsh -l
