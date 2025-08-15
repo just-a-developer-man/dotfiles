@@ -167,6 +167,20 @@ install_vs_code() {
   echo "[✓] Установка завершена!"
 }
 
+setup_terminal_transp() {
+  # Получаем UUID текущего (по умолчанию) профиля
+  PROFILE_ID=$(gsettings get org.gnome.Terminal.ProfilesList default | tr -d "'")
+
+  # Базовый путь к настройкам профиля
+  PROFILE_PATH="org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:${PROFILE_ID}/"
+
+  # Включаем использование прозрачного фона
+  gsettings set "$PROFILE_PATH" use-transparent-background true
+
+  # Устанавливаем уровень прозрачности (0 — непрозрачно, 100 — полностью прозрачно)
+  gsettings set "$PROFILE_PATH" background-transparency-percent 10
+}
+
 # -------------------------------
 # Main
 # -------------------------------
@@ -191,6 +205,7 @@ install_go_tools
 install_neovim_plugins
 setup_gnome_term_theme
 install_vs_code
+setup_terminal_transp
 
 echo "✅ Setup complete!"
 exec zsh -l
