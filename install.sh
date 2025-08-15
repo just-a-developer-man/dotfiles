@@ -56,8 +56,8 @@ install_lazygit() {
 }
 
 install_dotfiles() {
-  
-# required
+
+  # required
   if [[ -d "$HOME/.config/nvim" ]]; then
     echo "⚠️ Backing up existing Neovim config..."
     mv "$HOME/.config/nvim" "$HOME/.config/nvim.bak"
@@ -115,12 +115,43 @@ install_neovim_plugins() {
   fi
 }
 
+install_bin_tools() {
+  sudo apt install -y ghex qemu-system qemu-user gdb gdb-multiarch gdbserver gcc gcc-multilib binwalk hexedit wxhexeditor flatpak
+
+  sudo flatpak remote-add flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+  sudo flatpak install flathub org.radare.iaito
+}
+
+setup_gnome_term_theme() {
+  export GOGH_APPLY_SCRIPT=apply-colors.sh
+  export TERMINAL=gnome-terminal
+  export GOGH_NONINTERACTIVE=true
+  export GOGH_USE_NEW_THEME=
+  export SCRIPT=tokyo-night-storm.sh
+
+  wget "https://github.com/Gogh-Co/Gogh/raw/master/$GOGH_APPLY_SCRIPT"
+  wget "https://github.com/Gogh-Co/Gogh/raw/master/installs/$SCRIPT"
+
+  chmod +x "$SCRIPT"
+  bash "./$SCRIPT"
+
+  rm -f "./$SCRIPT" "./$GOGH_APPLY_SCRIPT"
+}
+
 # -------------------------------
 # Main
 # -------------------------------
 echo "🚀 Updating system..."
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y wget curl git nodejs npm build-essential ripgrep fd-find python3-dev python3-venv
+sudo apt install -y wget curl git nodejs npm build-essential ripgrep fd-find python3-dev python3-venv dconf-cli uuid-runtime
+sudo snap install task --classic
+wget https://github.com/Eugeny/tabby/releases/download/v1.0.225/tabby-1.0.225-linux-x64.deb
+sudo apt install ./tabby-1.0.225-linux-x64.deb
+rm -f ./tabby-1.0.225-linux-x64.deb
+
+if [[ -n "$BIN_TOOLS" ]]; then
+  install_bin_tools
+fi
 
 install_lazygit
 install_go_fixed
@@ -129,6 +160,7 @@ install_zsh_and_zinit
 install_dotfiles
 install_go_tools
 install_neovim_plugins
+setup_gnome_term_theme
 
 echo "✅ Setup complete!"
 exec zsh -l
