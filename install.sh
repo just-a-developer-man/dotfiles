@@ -138,6 +138,35 @@ setup_gnome_term_theme() {
   rm -f "./$SCRIPT" "./$GOGH_APPLY_SCRIPT"
 }
 
+install_vs_code() {
+  # Установка VS Code из snap
+  echo "[*] Устанавливаю VS Code..."
+  sudo snap install code --classic
+
+  # Ждем пока snap обновит PATH (на всякий случай)
+  sleep 2
+
+  # Список расширений
+  extensions=(
+    "golang.Go"
+    "ms-vscode.cpptools"
+    "ms-python.python"
+    "ms-azuretools.vscode-docker"
+    "eamodio.gitlens"
+    "redhat.vscode-yaml"
+    "zxh404.vscode-proto3"
+    "ms-vscode.cmake-tools"
+  )
+
+  echo "[*] Устанавливаю расширения VS Code..."
+  for ext in "${extensions[@]}"; do
+    echo "  -> $ext"
+    code --install-extension "$ext" --force
+  done
+
+  echo "[✓] Установка завершена!"
+}
+
 # -------------------------------
 # Main
 # -------------------------------
@@ -161,6 +190,7 @@ install_dotfiles
 install_go_tools
 install_neovim_plugins
 setup_gnome_term_theme
+install_vs_code
 
 echo "✅ Setup complete!"
 exec zsh -l
