@@ -56,13 +56,15 @@ install_lazygit() {
 }
 
 install_dotfiles() {
-  # required
-  mv ~/.config/nvim{,.bak}
-
-  # optional but recommended
-  mv ~/.local/share/nvim{,.bak}
-  mv ~/.local/state/nvim{,.bak}
-  mv ~/.cache/nvim{,.bak}
+  
+# required
+  if [[ -d "$HOME/.config/nvim" ]]; then
+    echo "⚠️ Backing up existing Neovim config..."
+    mv "$HOME/.config/nvim" "$HOME/.config/nvim.bak"
+  fi
+  [[ -d "$HOME/.local/share/nvim" ]] && mv "$HOME/.local/share/nvim" "$HOME/.local/share/nvim.bak"
+  [[ -d "$HOME/.local/state/nvim" ]] && mv "$HOME/.local/state/nvim" "$HOME/.local/state/nvim.bak"
+  [[ -d "$HOME/.cache/nvim" ]] && mv "$HOME/.cache/nvim" "$HOME/.cache/nvim.bak"
 
   echo "📥 Cloning/updating dotfiles..."
   if [[ ! -d "$DOTFILES_DIR" ]]; then

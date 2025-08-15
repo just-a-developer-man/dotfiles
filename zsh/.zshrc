@@ -13,6 +13,7 @@ setopt APPEND_HISTORY          # добавлять новые команды в
 setopt INC_APPEND_HISTORY      # сразу записывать команды
 setopt SHARE_HISTORY           # делиться историей между сессиями
 setopt HIST_IGNORE_DUPS        # игнорировать повторяющиеся команды
+setopt NO_BEEP
 
 # Поддержка цветов
 autoload -U colors && colors
