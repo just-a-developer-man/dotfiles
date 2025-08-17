@@ -44,10 +44,7 @@ dotfiles/
 ## Установка
 
 ```bash
-git clone https://github.com/just-a-developer-man/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-chmod +x install.sh
-./install.sh
+curl -fsSL https://raw.githubusercontent.com/just-a-developer-man/dotfiles/main/install.sh | bash
 ```
 
 Скрипт установит:
