@@ -12,6 +12,8 @@ GO_TOOLS=(
   github.com/go-delve/delve/cmd/dlv@latest
   github.com/golangci/golangci-lint/cmd/golangci-lint@latest
   mvdan.cc/gofumpt@latest
+  google.golang.org/protobuf/cmd/protoc-gen-go@latest
+  google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 )
 
 command_exists() { command -v "$1" >/dev/null 2>&1; }
@@ -28,7 +30,8 @@ install_go_fixed() {
   fi
   sudo rm -rf /usr/local/go
   sudo tar -C /usr/local -xzf "$GO_TAR"
-  export PATH=$PATH:/usr/local/go/bin:$(go env GOPATH)/bin
+  export PATH=$PATH:/usr/local/go/bin
+  export PATH=$PATH:$(go env GOPATH)/bin
 }
 
 install_latest_rust() {
@@ -107,6 +110,7 @@ install_go_tools() {
 }
 
 install_neovim_plugins() {
+  sudo snap install nvim --classic
   if command_exists nvim; then
     echo "📦 Installing Neovim plugins..."
     nvim --headless +'Lazy sync' +qa
@@ -116,7 +120,7 @@ install_neovim_plugins() {
 }
 
 install_bin_tools() {
-  sudo apt install -y ghex qemu-system qemu-user gdb gdb-multiarch gdbserver gcc gcc-multilib binwalk hexedit wxhexeditor flatpak
+  sudo apt install -y build-essential make meson autoconf automake libtool pkg-config valgrind strace ltrace zlib1g-dev libssl-dev libffi-dev libgmp-dev libboost-all-dev ccache git libncurses-dev ghex qemu-system qemu-user gdb gdb-multiarch gdbserver gcc binwalk hexedit wxhexeditor flatpak bison flex ninja-build binutils gcc-arm-\* gcc-aarch64-linux-gnu gcc-mips\* gcc-powerpc\* python3-dev python3-venv python3-setuptools python3-wheel python3-distutils-extra python3-requests python3-urllib3 python3-aiohttp python3-websocket python3-paramiko python3-ftputil python3-numpy python3-scipy python3-pandas python3-sympy python3-matplotlib python3-sqlalchemy python3-pymongo python3-django python3-flask python3-pytest python3-opencv python3-pil python3-cryptography python3-psutil python3-dateutil protobuf-compiler python3-protobuf python3-grpcio python3-grpc-tools libprotobuf-dev libgrpc-dev htop
 
   sudo flatpak remote-add flathub https://dl.flathub.org/repo/flathub.flatpakrepo
   sudo flatpak install flathub org.radare.iaito
@@ -133,6 +137,7 @@ setup_gnome_term_theme() {
   wget "https://github.com/Gogh-Co/Gogh/raw/master/installs/$SCRIPT"
 
   chmod +x "$SCRIPT"
+  chmod +x "$GOGH_APPLY_SCRIPT"
   bash "./$SCRIPT"
 
   rm -f "./$SCRIPT" "./$GOGH_APPLY_SCRIPT"
@@ -226,7 +231,7 @@ wget https://github.com/Eugeny/tabby/releases/download/v1.0.225/tabby-1.0.225-li
 sudo apt install ./tabby-1.0.225-linux-x64.deb
 rm -f ./tabby-1.0.225-linux-x64.deb
 
-if [[ -n "$BIN_TOOLS" ]]; then
+if [[ -n "${BIN_TOOLS:-}" ]]; then
   install_bin_tools
 fi
 
@@ -236,11 +241,11 @@ install_latest_rust
 install_zsh_and_zinit
 install_dotfiles
 install_go_tools
+install_vs_code
 install_neovim_plugins
 setup_gnome_term_theme
-install_vs_code
-setup_terminal_transp
 install_nerd_font
+setup_terminal_transp
 
 echo "✅ Setup complete!"
 exec zsh -l
